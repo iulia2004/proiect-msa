@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-heading page-heading--compact">
+  <div><p class="eyebrow">Flauna · Îngrijire cu drag</p><h1 class="page-title">{{ title }}</h1></div>
+</header>
+<form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} class="surface form-panel"
+      {% if wait %}onsubmit="document.getElementById('wait').classList.remove('hidden'); this.querySelector('button').disabled = true;"{% endif %}>
+  {% csrf_token %}
+  {% if multipart %}<p class="upload-hint">Pozele de pe telefon sunt redimensionate automat pentru încărcare și analiză. Pentru rezultate clare, încearcă o fotografie luminoasă și focalizată.</p>{% endif %}
+  {% for f in form %}
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1" for="{{ f.id_for_label }}">{{ f.label }}</label>
+      {{ f }}
+      {% if f.errors %}<p class="text-red-600 text-sm mt-1">{{ f.errors|join:", " }}</p>{% endif %}
+    </div>
+  {% endfor %}
+  <button class="button button-primary disabled:opacity-50">{{ submit }}</button>
+  <p id="wait" class="hidden mt-3 text-stone-600">Se lucrează… Analiza AI poate dura de la câteva secunde până la câteva minute (prima dată, mai mult). Nu închide pagina.</p>
+</form>
+{% endblock %}

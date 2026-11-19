@@ -1,0 +1,4 @@
+<button hx-post="{% url 'post_vote' post.pk %}" hx-swap="outerHTML"
+        class="button {% if voted %}button-primary{% else %}button-secondary{% endif %}">
+  {% if voted %}Util ✓{% else %}Util{% endif %} · {{ count }}
+</button>

@@ -1,0 +1,10 @@
+<li class="surface p-3 flex items-center justify-between gap-3">
+  <div>
+    <div class="font-medium">{{ t.title }}{% if t.target_name %} · {{ t.target_name }}{% endif %}</div>
+    <div class="text-sm text-stone-500">Scadent {{ t.next_due|date:"d.m.Y" }}{% if t.last_done %} · ultima dată {{ t.last_done|date:"d.m.Y" }}{% endif %}{% if t.frequency_days %} · la {{ t.frequency_days }} zile{% endif %}</div>
+  </div>
+  <div class="flex items-center gap-2 shrink-0">
+    <button hx-post="{% url 'task_done' t.pk %}" hx-swap="none" class="button button-primary">Făcut</button>
+    <button hx-post="{% url 'task_delete' t.pk %}" hx-swap="none" hx-confirm="Ștergi această sarcină?" class="button button-danger" title="Șterge">Șterge</button>
+  </div>
+</li>

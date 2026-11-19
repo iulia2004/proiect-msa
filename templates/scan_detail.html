@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{% url 'pet_list' %}" class="back-link">← Animale</a>
+<div class="photo-display mt-3">
+  <img src="{{ scan.image.url }}" alt="Fotografia animalului identificat">
+</div>
+{% include "_scan.html" %}
+{% if scan.pet %}
+  <div class="surface mt-4">
+    <p class="font-semibold">Animalul a fost salvat în profilurile tale.</p>
+    <a href="{{ scan.pet.get_absolute_url }}" class="button button-primary mt-3">Deschide profilul lui {{ scan.pet.name }}</a>
+  </div>
+{% else %}
+  <form method="post" action="{% url 'scan_save_pet' scan.pk %}" class="surface form-panel mt-4">
+    {% csrf_token %}
+    <p class="eyebrow">Păstrează-l aproape</p>
+    <h2 class="section-title section-title--inside mb-4">Salvează ca animalul meu</h2>
+    <p class="text-muted mb-4">Adaugă animalul identificat în profilurile tale pentru a-i putea organiza îngrijirea.</p>
+    {% for f in save_pet_form %}
+      <div class="mb-4">
+        <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+        {% if f.errors %}<p class="text-red-600 text-sm mt-1">{{ f.errors|join:", " }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button class="button button-primary">Salvează animalul</button>
+  </form>
+{% endif %}
+<a href="{% url 'pet_identify' %}" class="button button-secondary mt-4">Identifică alt animal</a>
+{% endblock %}

@@ -1,0 +1,15 @@
+<form method="post" action="{{ action }}" class="surface form-panel mt-4">
+  {% csrf_token %}
+  <h3 class="section-title section-title--inside mb-4">{{ heading }}</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    {% for f in task_form %}
+      <div>
+        <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<p class="field-help">{{ f.help_text }}</p>{% endif %}
+        {% if f.errors %}<p class="text-red-600 text-sm mt-1">{{ f.errors|join:", " }}</p>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <button class="button button-primary mt-3">Adaugă</button>
+</form>

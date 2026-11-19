@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{% url 'pet_list' %}" class="back-link">← Animalele mele</a>
+<div class="surface pet-profile mt-4">
+  {% if photo_scan %}
+    <div class="pet-profile__photo"><img src="{{ photo_scan.image.url }}" alt="Fotografia lui {{ pet.name }}"></div>
+  {% else %}
+    <span class="profile-card__icon" aria-hidden="true">🐾</span>
+  {% endif %}
+  <div class="pet-profile__info">
+    <p class="eyebrow">{{ pet.get_species_display }}{% if pet.breed %} · {{ pet.breed }}{% endif %}</p>
+    <h1 class="page-title">{{ pet.name }}</h1>
+    <p class="text-muted">{{ pet.get_location_display }}{% if pet.birth_date %} · născut {{ pet.birth_date|date:"d.m.Y" }}{% endif %}{% if pet.weight_kg %} · {{ pet.weight_kg }} kg{% endif %}</p>
+  </div>
+  <div class="profile-actions">
+    <a href="{% url 'pet_edit' pet.pk %}" class="button button-secondary">Editează</a>
+    <form method="post" action="{% url 'pet_delete' pet.pk %}" onsubmit="return confirm('Ștergi profilul lui {{ pet.name|escapejs }} și reminderele asociate?')">
+      {% csrf_token %}
+      <button class="button button-danger">Șterge</button>
+    </form>
+  </div>
+</div>
+
+<h2 class="section-title">Remindere</h2>
+<ul class="space-y-2">{% for t in tasks %}{% include "_task.html" %}{% empty %}<li class="text-stone-500">Niciun reminder activ.</li>{% endfor %}</ul>
+
+<form method="post" action="{% url 'pet_add_vaccine' pet.pk %}" class="surface form-panel mt-5">
+  {% csrf_token %}
+  <h3 class="section-title section-title--inside">Adaugă un vaccin făcut</h3>
+  {% if vaccine_form.fields.rule.queryset.exists %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {% for f in vaccine_form %}<div><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</div>{% endfor %}
+    </div>
+    <button class="button button-primary mt-3">Calculează următoarea doză</button>
+  {% else %}
+    <p class="text-stone-500">Nu există reguli de vaccinare pentru această specie. Adaugă-le în panoul Admin.</p>
+  {% endif %}
+  <p class="text-xs text-stone-500 mt-3">Datele sunt calculate din scheme standard. Confirmă întotdeauna cu medicul veterinar.</p>
+</form>
+
+{% url 'pet_add_task' pet.pk as action %}
+{% include "_task_form.html" with heading="Adaugă hrănire sau deparazitare" %}
+{% endblock %}

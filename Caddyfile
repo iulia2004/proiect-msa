@@ -1,0 +1,10 @@
+{$SITE_URL} {
+	encode gzip
+	handle /media/* {
+		root * /srv
+		file_server
+	}
+	handle {
+		reverse_proxy web:8000
+	}
+}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+{% block content %}
+<div class="surface login-card text-center">
+  <span class="login-card__mark" aria-hidden="true">f</span>
+  <p class="eyebrow">Bine ai venit în</p>
+  <h1 class="page-title mb-2">Flauna</h1>
+  <p class="mb-8 text-muted">Un loc blând pentru plantele și animalele tale.</p>
+  {% if google_enabled %}
+    <a href="{% provider_login_url 'google' process='login' %}" class="button button-secondary w-full">Continuă cu Google</a>
+    <p class="my-4 text-muted text-sm">sau</p>
+  {% endif %}
+  <a href="/accounts/login/" class="button button-primary w-full">Conectează-te cu email</a>
+  <a href="/accounts/signup/" class="login-card__signup">Creează un cont nou</a>
+</div>
+{% endblock %}

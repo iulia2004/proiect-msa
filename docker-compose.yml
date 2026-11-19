@@ -1,0 +1,83 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: flauna
+      POSTGRES_USER: flauna
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flauna"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  ollama:
+    image: ollama/ollama
+    restart: unless-stopped
+    environment:
+      OLLAMA_KEEP_ALIVE: 1m
+    volumes:
+      - ollama:/root/.ollama
+    # --- NVIDIA GPU: uncomment these lines (needs nvidia-container-toolkit on the host) ---
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  web:
+    build: .
+    image: flauna:latest
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media:/app/media
+      - hf:/hf
+      - ./core/migrations:/app/core/migrations
+    command: >
+      sh -c "python manage.py makemigrations core --noinput &&
+             python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput &&
+             python manage.py seed_data &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 4 --timeout 600"
+
+  worker:
+    image: flauna:latest
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - web
+    command: sh -c "sleep 60; while true; do python manage.py send_reminders; sleep 900; done"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_URL: ${SITE_URL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - media:/srv/media:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  pgdata:
+  ollama:
+  media:
+  hf:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-heading">
+  <div>
+    <p class="eyebrow">Bun venit înapoi</p>
+    <h1 class="page-title">O zi bună începe cu grijă.</h1>
+    <p class="page-description">Micile gesturi de azi fac bine plantelor și prietenilor tăi blănoși.</p>
+  </div>
+</header>
+<section class="surface dashboard-section">
+<div class="section-heading">
+  <div><p class="eyebrow">Lista ta de îngrijire</p><h2 class="section-title section-title--inside">De făcut azi</h2></div>
+</div>
+{% if due %}
+  <ul class="space-y-2">{% for t in due %}{% include "_task.html" %}{% endfor %}</ul>
+{% else %}
+  <p class="empty-note">Nimic de făcut azi. Poți scana o plantă sau adăuga un animal ca să primești remindere.</p>
+{% endif %}
+{% if soon %}
+  <h2 class="section-title mt-7 mb-3">În următoarele 7 zile</h2>
+  <ul class="space-y-2">{% for t in soon %}{% include "_task.html" %}{% endfor %}</ul>
+{% endif %}
+</section>
+<div class="quick-actions mt-5">
+  <a href="{% url 'plant_scan' %}" class="quick-action"><span aria-hidden="true">🌿</span><span><strong>Scanează o plantă</strong><small>Identifică și primește sfaturi</small></span><b aria-hidden="true">→</b></a>
+  <a href="{% url 'pet_identify' %}" class="quick-action"><span aria-hidden="true">🐾</span><span><strong>Identifică un animal</strong><small>Analizează o fotografie</small></span><b aria-hidden="true">→</b></a>
+</div>
+<div class="surface notification-panel mt-5">
+  <div><h2 class="font-semibold">Notificări pe acest dispozitiv</h2><p class="text-sm text-muted mt-1">Primește un semn când e timpul pentru următoarea grijă.</p></div>
+  <div class="flex flex-wrap gap-2">
+  <button onclick="enablePush()" class="button button-primary">Activează notificările</button>
+  <form method="post" action="{% url 'push_test' %}" class="inline">{% csrf_token %}
+    <button class="button button-secondary">Trimite o notificare de test</button>
+  </form>
+  </div>
+</div>
+{% endblock %}

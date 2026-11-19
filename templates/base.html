@@ -1,0 +1,40 @@
+{% load static %}<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Flauna{% endblock %}</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#214b3b">
+  <link rel="icon" href="{% static 'icons/icon-192.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <link rel="stylesheet" href="{% static 'app.css' %}">
+</head>
+<body class="min-h-screen" data-csrf="{{ csrf_token }}" data-vapid="{{ vapid_public_key }}"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <nav class="site-nav">
+    <div class="site-nav__inner">
+      <a href="/" class="site-brand"><span class="site-brand__mark" aria-hidden="true">f</span><span>flauna</span></a>
+      {% if request.user.is_authenticated %}
+        <div class="site-nav__links">
+          <a href="{% url 'home' %}" class="site-nav__link">Azi</a>
+          <a href="{% url 'plant_list' %}" class="site-nav__link">Plante</a>
+          <a href="{% url 'pet_list' %}" class="site-nav__link">Animale</a>
+          <a href="{% url 'forum_list' %}" class="site-nav__link">Comunitate</a>
+        </div>
+        <a href="/accounts/logout/" class="site-nav__logout">Ieșire</a>
+      {% endif %}
+    </div>
+  </nav>
+  <main class="site-main">
+    {% for m in messages %}
+      <div class="notice mb-4 {% if m.tags == 'error' %}notice--error{% elif m.tags == 'warning' %}notice--warning{% else %}notice--success{% endif %}">{{ m }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">Cu grijă pentru tot ce crește. <span aria-hidden="true">✦</span></footer>
+  <script src="{% static 'app.js' %}"></script>
+</body>
+</html>
