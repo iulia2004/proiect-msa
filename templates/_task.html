@@ -1,10 +1,16 @@
-<li class="surface p-3 flex items-center justify-between gap-3">
-  <div>
-    <div class="font-medium">{{ t.title }}{% if t.target_name %} · {{ t.target_name }}{% endif %}</div>
-    <div class="text-sm text-stone-500">Scadent {{ t.next_due|date:"d.m.Y" }}{% if t.last_done %} · ultima dată {{ t.last_done|date:"d.m.Y" }}{% endif %}{% if t.frequency_days %} · la {{ t.frequency_days }} zile{% endif %}</div>
+{% load flauna %}
+<li class="task {% if upcoming %}task--upcoming{% endif %}">
+  <span class="task__icon task__icon--{{ t.kind }}" aria-hidden="true">{{ t.kind|kind_emoji }}</span>
+  <div class="task__body">
+    <div class="task__title">{{ t.title }}{% if t.target_name %} <span class="task__target">· {{ t.target_name }}</span>{% endif %}</div>
+    <div class="task__meta">
+      <span>{% icon "calendar" 14 %} {{ t.next_due|date:"j M" }}</span>
+      {% if t.frequency_days %}<span>{% icon "repeat" 14 %} {% if t.frequency_days == 1 %}zilnic{% elif t.frequency_days == 7 %}săptămânal{% else %}la {{ t.frequency_days }} zile{% endif %}</span>{% endif %}
+      {% if t.last_done %}<span>ultima dată {{ t.last_done|date:"j M" }}</span>{% endif %}
+    </div>
   </div>
-  <div class="flex items-center gap-2 shrink-0">
-    <button hx-post="{% url 'task_done' t.pk %}" hx-swap="none" class="button button-primary">Făcut</button>
-    <button hx-post="{% url 'task_delete' t.pk %}" hx-swap="none" hx-confirm="Ștergi această sarcină?" class="button button-danger" title="Șterge">Șterge</button>
+  <div class="task__actions">
+    <button hx-post="{% url 'task_done' t.pk %}" hx-swap="none" class="button button-primary button-sm" title="Marchează ca făcut">{% icon "check" 16 %}<span>Făcut</span></button>
+    <button hx-post="{% url 'task_delete' t.pk %}" hx-swap="none" hx-confirm="Ștergi această sarcină?" class="icon-button icon-button--danger" title="Șterge">{% icon "trash" 16 %}</button>
   </div>
 </li>

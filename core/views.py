@@ -30,7 +30,11 @@ def home(request):
     base = CareTask.objects.filter(owner=request.user, active=True).select_related("plant", "pet")
     due = base.filter(next_due__lte=today)
     soon = base.filter(next_due__gt=today, next_due__lte=today + timedelta(days=7))
-    return render(request, "home.html", {"due": due, "soon": soon})
+    return render(request, "home.html", {
+        "due": due, "soon": soon,
+        "plant_count": Plant.objects.filter(owner=request.user).count(),
+        "pet_count": Pet.objects.filter(owner=request.user).count(),
+    })
 
 
 # ---------- plants ----------

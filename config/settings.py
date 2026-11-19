@@ -135,3 +135,4 @@ MODERATE_FORUM = env("MODERATE_FORUM", "1") == "1"
 VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY")
 VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY")
 VAPID_EMAIL = env("VAPID_EMAIL", "mailto:admin@example.com")
+ACCOUNT_FORMS = {"login": "core.forms.FlaunaLoginForm", "signup": "core.forms.FlaunaSignupForm"}

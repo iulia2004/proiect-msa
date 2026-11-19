@@ -1,24 +1,37 @@
 {% extends "base.html" %}
+{% load flauna %}
 {% block content %}
 <header class="page-heading">
   <div><p class="eyebrow">Un colț verde</p><h1 class="page-title">Plantele mele</h1><p class="page-description">Un strop de atenție pentru fiecare frunză.</p></div>
-  <div class="flex flex-wrap gap-2">
-    <a href="{% url 'plant_new' %}" class="button button-secondary">Adaugă manual</a>
-    <a href="{% url 'plant_scan' %}" class="button button-primary">＋ Scanează o plantă</a>
+  <div class="page-heading__actions">
+    <a href="{% url 'plant_new' %}" class="button button-secondary">{% icon "plus" 16 %} Adaugă manual</a>
+    <a href="{% url 'plant_scan' %}" class="button button-primary">{% icon "camera" 16 %} Scanează o plantă</a>
   </div>
 </header>
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-  {% for p in plants %}
-    <a href="{{ p.get_absolute_url }}" class="plant-card surface block">
-      {% if p.photo %}
-        <img src="{{ p.photo.url }}" alt="" class="plant-card__image">
-      {% else %}
-        <div class="plant-card__placeholder" aria-hidden="true">🌿</div>
-      {% endif %}
-      <div class="p-4"><div class="font-semibold text-lg">{{ p }}</div><div class="text-sm italic text-muted">{{ p.species }}</div><div class="mt-3 inline-flex rounded-full bg-soft px-3 py-1 text-xs font-medium">{{ p.get_location_display }}</div></div>
-    </a>
-  {% empty %}
-    <div class="surface empty-state sm:col-span-2"><span class="empty-state__icon" aria-hidden="true">🌱</span><h2 class="text-lg font-semibold">Grădina ta începe aici</h2><p class="text-muted">Adaugă o plantă manual sau scanează o fotografie pentru identificare și sfaturi personalizate.</p><div class="flex flex-wrap justify-center gap-2 mt-2"><a href="{% url 'plant_new' %}" class="button button-secondary">Adaugă manual</a><a href="{% url 'plant_scan' %}" class="button button-primary">Scanează o plantă</a></div></div>
-  {% endfor %}
-</div>
+{% if plants %}
+  <div class="card-grid">
+    {% for p in plants %}
+      <a href="{{ p.get_absolute_url }}" class="media-card">
+        <div class="media-card__media">
+          {% if p.photo %}<img src="{{ p.photo.url }}" alt="" loading="lazy">{% else %}<span class="media-card__placeholder" aria-hidden="true">🌿</span>{% endif %}
+          <span class="chip chip--float">{% icon "pin" 13 %} {{ p.get_location_display }}</span>
+        </div>
+        <div class="media-card__body">
+          <strong class="media-card__title">{{ p }}</strong>
+          {% if p.species %}<span class="media-card__sub">{{ p.species }}</span>{% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="surface empty-state">
+    <span class="empty-state__icon" aria-hidden="true">🌱</span>
+    <h2>Grădina ta începe aici</h2>
+    <p>Adaugă o plantă manual sau scanează o fotografie pentru identificare și sfaturi personalizate.</p>
+    <div class="empty-state__actions">
+      <a href="{% url 'plant_new' %}" class="button button-secondary">Adaugă manual</a>
+      <a href="{% url 'plant_scan' %}" class="button button-primary">{% icon "camera" 16 %} Scanează o plantă</a>
+    </div>
+  </div>
+{% endif %}
 {% endblock %}

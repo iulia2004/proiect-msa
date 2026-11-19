@@ -1,16 +1,30 @@
 {% extends "base.html" %}
-{% load socialaccount %}
+{% load socialaccount flauna %}
 {% block content %}
-<div class="surface login-card text-center">
-  <span class="login-card__mark" aria-hidden="true">f</span>
-  <p class="eyebrow">Bine ai venit în</p>
-  <h1 class="page-title mb-2">Flauna</h1>
-  <p class="mb-8 text-muted">Un loc blând pentru plantele și animalele tale.</p>
-  {% if google_enabled %}
-    <a href="{% provider_login_url 'google' process='login' %}" class="button button-secondary w-full">Continuă cu Google</a>
-    <p class="my-4 text-muted text-sm">sau</p>
-  {% endif %}
-  <a href="/accounts/login/" class="button button-primary w-full">Conectează-te cu email</a>
-  <a href="/accounts/signup/" class="login-card__signup">Creează un cont nou</a>
-</div>
+<section class="landing">
+  <div class="landing__copy">
+    <p class="eyebrow">Plante · Animale · Comunitate</p>
+    <h1 class="display-title">Grijă blândă pentru tot ce <em>crește</em> lângă tine.</h1>
+    <p class="landing__lead">Fotografiază o plantă sau un animal, află ce e și primește sfaturi, iar Flauna îți amintește la timp de udat, hrănit sau vaccinuri.</p>
+    <div class="landing__actions">
+      <a href="/accounts/signup/" class="button button-primary button-lg">Creează un cont gratuit {% icon "arrow-right" 18 %}</a>
+      <a href="/accounts/login/" class="button button-secondary button-lg">Am deja cont</a>
+    </div>
+    {% if google_enabled %}
+      <a href="{% provider_login_url 'google' process='login' %}" class="landing__google">sau continuă cu Google</a>
+    {% endif %}
+    <ul class="landing__features">
+      <li><span class="feature-dot feature-dot--green">{% icon "camera" 18 %}</span><span><strong>Identificare AI</strong>Specie, stare de sănătate și sfaturi dintr-o poză.</span></li>
+      <li><span class="feature-dot feature-dot--sun">{% icon "bell" 18 %}</span><span><strong>Remindere</strong>Notificări pentru udat, hrănire și deparazitare.</span></li>
+      <li><span class="feature-dot feature-dot--clay">{% icon "heart" 18 %}</span><span><strong>Siguranță</strong>Avertizări când o plantă e toxică pentru animalul tău.</span></li>
+    </ul>
+  </div>
+  <div class="landing__art" aria-hidden="true">
+    <div class="blob"></div>
+    <div class="float-card float-card--a"><span class="float-card__emoji">🪴</span><span><strong>Monstera</strong><small>Udat azi · la 7 zile</small></span></div>
+    <div class="float-card float-card--b"><span class="float-card__emoji">🐱</span><span><strong>Mia</strong><small>Vaccin în 3 zile</small></span></div>
+    <div class="float-card float-card--c"><span class="float-card__check">{% icon "check" 16 %}</span><span><strong>Totul e la zi</strong><small>Bravo! 🌿</small></span></div>
+    <div class="landing__emoji">🌿</div>
+  </div>
+</section>
 {% endblock %}

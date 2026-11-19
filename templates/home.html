@@ -1,37 +1,71 @@
 {% extends "base.html" %}
+{% load flauna %}
 {% block content %}
-<header class="page-heading">
-  <div>
-    <p class="eyebrow">Bun venit înapoi</p>
-    <h1 class="page-title">O zi bună începe cu grijă.</h1>
-    <p class="page-description">Micile gesturi de azi fac bine plantelor și prietenilor tăi blănoși.</p>
+<section class="hero">
+  <div class="hero__copy">
+    <p class="eyebrow eyebrow--light">{% now "l, j F" %}</p>
+    <h1 class="display-title display-title--light">Bună, {{ request.user|display_name }}!</h1>
+    <p class="hero__lead">
+      {% if due %}Ai {{ due|length }} {% if due|length == 1 %}lucru{% else %}lucruri{% endif %} de făcut azi. Micile gesturi contează.
+      {% else %}Totul e la zi. Plantele și prietenii tăi îți mulțumesc. 🌿{% endif %}
+    </p>
   </div>
-</header>
-<section class="surface dashboard-section">
-<div class="section-heading">
-  <div><p class="eyebrow">Lista ta de îngrijire</p><h2 class="section-title section-title--inside">De făcut azi</h2></div>
-</div>
-{% if due %}
-  <ul class="space-y-2">{% for t in due %}{% include "_task.html" %}{% endfor %}</ul>
-{% else %}
-  <p class="empty-note">Nimic de făcut azi. Poți scana o plantă sau adăuga un animal ca să primești remindere.</p>
-{% endif %}
-{% if soon %}
-  <h2 class="section-title mt-7 mb-3">În următoarele 7 zile</h2>
-  <ul class="space-y-2">{% for t in soon %}{% include "_task.html" %}{% endfor %}</ul>
-{% endif %}
+  <div class="hero__stats">
+    <a href="{% url 'plant_list' %}" class="stat"><strong>{{ plant_count }}</strong><span>plante</span></a>
+    <a href="{% url 'pet_list' %}" class="stat"><strong>{{ pet_count }}</strong><span>animale</span></a>
+    <div class="stat"><strong>{{ due|length }}</strong><span>azi</span></div>
+  </div>
 </section>
-<div class="quick-actions mt-5">
-  <a href="{% url 'plant_scan' %}" class="quick-action"><span aria-hidden="true">🌿</span><span><strong>Scanează o plantă</strong><small>Identifică și primește sfaturi</small></span><b aria-hidden="true">→</b></a>
-  <a href="{% url 'pet_identify' %}" class="quick-action"><span aria-hidden="true">🐾</span><span><strong>Identifică un animal</strong><small>Analizează o fotografie</small></span><b aria-hidden="true">→</b></a>
+
+<div class="quick-actions">
+  <a href="{% url 'plant_scan' %}" class="quick-action quick-action--green">
+    <span class="quick-action__icon">{% icon "camera" 22 %}</span>
+    <span><strong>Scanează o plantă</strong><small>Identifică și primește sfaturi</small></span>
+    <span class="quick-action__arrow">{% icon "arrow-right" 18 %}</span>
+  </a>
+  <a href="{% url 'pet_identify' %}" class="quick-action quick-action--clay">
+    <span class="quick-action__icon">{% icon "paw" 22 %}</span>
+    <span><strong>Identifică un animal</strong><small>Analizează o fotografie</small></span>
+    <span class="quick-action__arrow">{% icon "arrow-right" 18 %}</span>
+  </a>
+  <a href="{% url 'post_new' %}" class="quick-action quick-action--sun">
+    <span class="quick-action__icon">{% icon "chat" 22 %}</span>
+    <span><strong>Întreabă comunitatea</strong><small>Primește ajutor de la alții</small></span>
+    <span class="quick-action__arrow">{% icon "arrow-right" 18 %}</span>
+  </a>
 </div>
-<div class="surface notification-panel mt-5">
-  <div><h2 class="font-semibold">Notificări pe acest dispozitiv</h2><p class="text-sm text-muted mt-1">Primește un semn când e timpul pentru următoarea grijă.</p></div>
-  <div class="flex flex-wrap gap-2">
-  <button onclick="enablePush()" class="button button-primary">Activează notificările</button>
-  <form method="post" action="{% url 'push_test' %}" class="inline">{% csrf_token %}
-    <button class="button button-secondary">Trimite o notificare de test</button>
-  </form>
+
+<section class="surface section-card">
+  <div class="section-heading">
+    <div><p class="eyebrow">Lista ta de îngrijire</p><h2 class="section-title section-title--inside">De făcut azi</h2></div>
+    {% if due %}<span class="count-badge">{{ due|length }}</span>{% endif %}
   </div>
-</div>
+  {% if due %}
+    <ul class="task-list">{% for t in due %}{% include "_task.html" %}{% endfor %}</ul>
+  {% else %}
+    <div class="empty-inline">
+      <span class="empty-inline__emoji">☀️</span>
+      <p>Nimic de făcut azi. Scanează o plantă sau adaugă un animal ca să primești remindere.</p>
+    </div>
+  {% endif %}
+
+  {% if soon %}
+    <h3 class="subsection-title">În următoarele 7 zile</h3>
+    <ul class="task-list">{% for t in soon %}{% include "_task.html" with upcoming=True %}{% endfor %}</ul>
+  {% endif %}
+</section>
+
+<section class="surface notification-panel">
+  <span class="notification-panel__icon">{% icon "bell" 22 %}</span>
+  <div class="notification-panel__text">
+    <h2>Notificări pe acest dispozitiv</h2>
+    <p>Primește un semn când e timpul pentru următoarea grijă.</p>
+  </div>
+  <div class="notification-panel__actions">
+    <button onclick="enablePush()" class="button button-primary">Activează</button>
+    <form method="post" action="{% url 'push_test' %}">{% csrf_token %}
+      <button class="button button-ghost">Trimite un test</button>
+    </form>
+  </div>
+</section>
 {% endblock %}

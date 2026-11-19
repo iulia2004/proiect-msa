@@ -1,40 +1,75 @@
-{% load static %}<!doctype html>
+{% load static flauna %}<!doctype html>
 <html lang="ro">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Flauna{% endblock %}</title>
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#214b3b">
+  <meta name="theme-color" content="#f7f4ec">
   <link rel="icon" href="{% static 'icons/icon-192.png' %}">
   <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <link rel="stylesheet" href="{% static 'app.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen" data-csrf="{{ csrf_token }}" data-vapid="{{ vapid_public_key }}"
+<body class="{% if request.user.is_authenticated %}has-tabbar{% endif %}" data-csrf="{{ csrf_token }}" data-vapid="{{ vapid_public_key }}"
       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <nav class="site-nav">
     <div class="site-nav__inner">
-      <a href="/" class="site-brand"><span class="site-brand__mark" aria-hidden="true">f</span><span>flauna</span></a>
+      <a href="/" class="site-brand">
+        <span class="site-brand__mark">{% icon "leaf" 18 %}</span>
+        <span class="site-brand__name">flauna</span>
+      </a>
       {% if request.user.is_authenticated %}
         <div class="site-nav__links">
-          <a href="{% url 'home' %}" class="site-nav__link">Azi</a>
-          <a href="{% url 'plant_list' %}" class="site-nav__link">Plante</a>
-          <a href="{% url 'pet_list' %}" class="site-nav__link">Animale</a>
-          <a href="{% url 'forum_list' %}" class="site-nav__link">Comunitate</a>
+          <a href="{% url 'home' %}" class="site-nav__link {% if nav_section == 'home' %}is-active{% endif %}">{% icon "home" 18 %}<span>Azi</span></a>
+          <a href="{% url 'plant_list' %}" class="site-nav__link {% if nav_section == 'plants' %}is-active{% endif %}">{% icon "leaf" 18 %}<span>Plante</span></a>
+          <a href="{% url 'pet_list' %}" class="site-nav__link {% if nav_section == 'pets' %}is-active{% endif %}">{% icon "paw" 18 %}<span>Animale</span></a>
+          <a href="{% url 'forum_list' %}" class="site-nav__link {% if nav_section == 'forum' %}is-active{% endif %}">{% icon "chat" 18 %}<span>Comunitate</span></a>
         </div>
-        <a href="/accounts/logout/" class="site-nav__logout">Ieșire</a>
+        <div class="site-nav__user">
+          <span class="avatar" title="{{ request.user.email }}">{{ request.user|display_name|initial }}</span>
+          <a href="/accounts/logout/" class="site-nav__logout" title="Ieșire">{% icon "logout" 18 %}<span>Ieșire</span></a>
+        </div>
+      {% else %}
+        <div class="site-nav__guest">
+          <a href="/accounts/login/" class="site-nav__link">Conectare</a>
+          <a href="/accounts/signup/" class="button button-primary button-sm">Creează cont</a>
+        </div>
       {% endif %}
     </div>
   </nav>
+
   <main class="site-main">
-    {% for m in messages %}
-      <div class="notice mb-4 {% if m.tags == 'error' %}notice--error{% elif m.tags == 'warning' %}notice--warning{% else %}notice--success{% endif %}">{{ m }}</div>
-    {% endfor %}
-    {% block content %}{% endblock %}
+    {% if messages %}
+      <div class="notices">
+        {% for m in messages %}
+          <div class="notice {% if m.tags == 'error' %}notice--error{% elif m.tags == 'warning' %}notice--warning{% else %}notice--success{% endif %}">{{ m }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block main %}{% block content %}{% endblock %}{% endblock %}
   </main>
-  <footer class="site-footer">Cu grijă pentru tot ce crește. <span aria-hidden="true">✦</span></footer>
+
+  <footer class="site-footer">
+    <span class="site-footer__mark">{% icon "leaf" 14 %}</span> Flauna — cu grijă pentru tot ce crește.
+  </footer>
+
+  {% if request.user.is_authenticated %}
+    <nav class="tabbar" aria-label="Navigare principală">
+      <a href="{% url 'home' %}" class="tabbar__link {% if nav_section == 'home' %}is-active{% endif %}">{% icon "home" 22 %}<span>Azi</span></a>
+      <a href="{% url 'plant_list' %}" class="tabbar__link {% if nav_section == 'plants' %}is-active{% endif %}">{% icon "leaf" 22 %}<span>Plante</span></a>
+      <a href="{% url 'plant_scan' %}" class="tabbar__scan" title="Scanează o plantă">{% icon "camera" 24 %}</a>
+      <a href="{% url 'pet_list' %}" class="tabbar__link {% if nav_section == 'pets' %}is-active{% endif %}">{% icon "paw" 22 %}<span>Animale</span></a>
+      <a href="{% url 'forum_list' %}" class="tabbar__link {% if nav_section == 'forum' %}is-active{% endif %}">{% icon "chat" 22 %}<span>Forum</span></a>
+    </nav>
+  {% endif %}
+
   <script src="{% static 'app.js' %}"></script>
+  {% block extra_body %}{% endblock %}
 </body>
 </html>

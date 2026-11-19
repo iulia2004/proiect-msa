@@ -1,0 +1,13 @@
+{% extends "account/base_manage.html" %}
+{% block head_title %}Ieșire{% endblock head_title %}
+{% block content %}
+  <h1 class="auth-title">Pleci deja?</h1>
+  <p class="auth-text">Sigur vrei să ieși din cont?</p>
+  <form method="post" action="{% url 'account_logout' %}" class="auth-form">
+    {% csrf_token %}
+    {{ redirect_field }}
+    <div class="auth-form__actions">
+      <button type="submit" class="button button-primary button-lg w-full">Ieși din cont</button>
+    </div>
+  </form>
+{% endblock content %}

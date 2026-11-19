@@ -1,0 +1,20 @@
+{% extends "account/base_entrance.html" %}
+{% load allauth %}
+{% block head_title %}Conectare{% endblock head_title %}
+{% block content %}
+  <h1 class="auth-title">Bine ai revenit</h1>
+  <p class="auth-text">Nu ai încă un cont? <a href="{{ signup_url }}">Înregistrează-te</a>.</p>
+  {% if not SOCIALACCOUNT_ONLY %}
+    <form method="post" action="{% url 'account_login' %}" class="auth-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {{ redirect_field }}
+      <div class="auth-form__actions">
+        <button type="submit" class="button button-primary button-lg w-full">Conectează-te</button>
+      </div>
+    </form>
+  {% endif %}
+  {% if SOCIALACCOUNT_ENABLED %}
+    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+  {% endif %}
+{% endblock content %}

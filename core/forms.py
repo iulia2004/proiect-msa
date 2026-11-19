@@ -1,3 +1,4 @@
+from allauth.account.forms import LoginForm, SignupForm
 from django import forms
 from django.utils import timezone
 
@@ -104,3 +105,34 @@ class CommentForm(Styled, forms.ModelForm):
         fields = ["body"]
         widgets = {"body": forms.Textarea(attrs={"rows": 3})}
         labels = {"body": "Scrie un comentariu"}
+
+
+# --- allauth forms with proper Romanian labels ---
+
+AUTH_LABELS = {
+    "login": ("Email", "adresa@exemplu.ro"),
+    "email": ("Email", "adresa@exemplu.ro"),
+    "password": ("Parolă", "Parola ta"),
+    "password1": ("Parolă", "Alege o parolă"),
+    "password2": ("Confirmă parola", "Scrie parola din nou"),
+    "remember": ("Ține-mă minte", None),
+}
+
+
+class AuthLabels:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+        for name, (label, placeholder) in AUTH_LABELS.items():
+            if name in self.fields:
+                self.fields[name].label = label
+                if placeholder:
+                    self.fields[name].widget.attrs["placeholder"] = placeholder
+
+
+class FlaunaLoginForm(AuthLabels, LoginForm):
+    pass
+
+
+class FlaunaSignupForm(AuthLabels, SignupForm):
+    pass

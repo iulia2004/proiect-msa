@@ -1,23 +1,40 @@
 {% extends "base.html" %}
+{% load flauna %}
 {% block content %}
 <header class="page-heading">
   <div><p class="eyebrow">Împreună învățăm</p><h1 class="page-title">Comunitatea Flauna</h1><p class="page-description">Întrebări, răspunsuri și idei de la oameni care iubesc natura.</p></div>
-  <a href="{% url 'post_new' %}?c={{ cat|default:'plante' }}" class="button button-primary">＋ Postare nouă</a>
+  <div class="page-heading__actions">
+    <a href="{% url 'post_new' %}?c={{ cat|default:'plante' }}" class="button button-primary">{% icon "plus" 16 %} Postare nouă</a>
+  </div>
 </header>
-<div class="filter-tabs mb-4">
-  <a href="{% url 'forum_list' %}" class="filter-tab {% if not cat %}filter-tab--active{% endif %}">Toate</a>
-  <a href="?c=plante" class="filter-tab {% if cat == 'plante' %}filter-tab--active{% endif %}">Plante</a>
-  <a href="?c=animale" class="filter-tab {% if cat == 'animale' %}filter-tab--active{% endif %}">Animale</a>
+<div class="filter-tabs">
+  <a href="{% url 'forum_list' %}" class="filter-tab {% if not cat %}is-active{% endif %}">Toate</a>
+  <a href="?c=plante" class="filter-tab {% if cat == 'plante' %}is-active{% endif %}">🌿 Plante</a>
+  <a href="?c=animale" class="filter-tab {% if cat == 'animale' %}is-active{% endif %}">🐾 Animale</a>
 </div>
-<ul class="space-y-2">
-  {% for p in posts %}
-    <li class="surface forum-post">
-      <a href="{{ p.get_absolute_url }}" class="font-semibold text-lg">{{ p.title }}</a>
-      <p class="text-sm text-muted mt-1">{{ p.get_category_display }} · {{ p.created|date:"d.m.Y H:i" }} · {{ p.comment_count }} comentarii</p>
-      <div class="mt-2">{% include "_vote.html" with post=p count=p.vote_count voted=p.voted %}</div>
-    </li>
-  {% empty %}
-    <li class="surface empty-note">Nicio postare încă. Fii primul care întreabă ceva.</li>
-  {% endfor %}
-</ul>
+{% if posts %}
+  <ul class="post-list">
+    {% for p in posts %}
+      <li class="surface post-card">
+        <span class="post-card__avatar post-card__avatar--{{ p.category }}" aria-hidden="true">{% if p.category == 'plante' %}🌿{% else %}🐾{% endif %}</span>
+        <div class="post-card__body">
+          <a href="{{ p.get_absolute_url }}" class="post-card__title">{{ p.title }}</a>
+          <div class="post-card__meta">
+            <span class="chip chip--{{ p.category }}">{{ p.get_category_display }}</span>
+            <span>{{ p.created|date:"j M Y, H:i" }}</span>
+            <span>{% icon "chat" 14 %} {{ p.comment_count }}</span>
+          </div>
+        </div>
+        <div class="post-card__vote">{% include "_vote.html" with post=p count=p.vote_count voted=p.voted %}</div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="surface empty-state">
+    <span class="empty-state__icon" aria-hidden="true">💬</span>
+    <h2>Nicio postare încă</h2>
+    <p>Fii primul care întreabă ceva. Comunitatea te ajută cu plăcere.</p>
+    <div class="empty-state__actions"><a href="{% url 'post_new' %}?c={{ cat|default:'plante' }}" class="button button-primary">{% icon "plus" 16 %} Scrie o postare</a></div>
+  </div>
+{% endif %}
 {% endblock %}

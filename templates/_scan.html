@@ -1,18 +1,31 @@
-<div class="surface mt-4">
-  <h2 class="font-semibold text-lg mb-2">Rezultatul analizei</h2>
+{% load flauna %}
+<section class="surface scan-result">
+  <div class="form-panel__head">
+    <span class="form-panel__icon">{% icon "sparkle" 18 %}</span>
+    <h2 class="section-title section-title--inside">Rezultatul analizei</h2>
+  </div>
   {% if scan.candidates %}
-    <p class="text-sm text-stone-500 mb-1">Specii probabile:</p>
-    <ul class="mb-3">
+    <p class="label-muted">Specii probabile</p>
+    <ul class="candidates">
       {% for c in scan.candidates %}
-        <li>{% if c.common_name %}{{ c.common_name }} – {% endif %}<span class="italic">{{ c.species }}</span> <span class="text-stone-500">({{ c.score }}%)</span></li>
+        <li class="candidate">
+          <div class="candidate__name">{% if c.common_name %}<strong>{{ c.common_name }}</strong> {% endif %}<em>{{ c.species }}</em></div>
+          <div class="candidate__bar"><span style="width: {{ c.score }}%"></span></div>
+          <span class="candidate__score">{{ c.score }}%</span>
+        </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p class="text-sm text-stone-500 mb-3">Specia nu a putut fi identificată.</p>
+    <p class="text-muted mb-3">Specia nu a putut fi identificată.</p>
   {% endif %}
-  {% if scan.health %}<p class="mb-2"><b>Stare:</b> {{ scan.health }}</p>{% endif %}
-  {% if scan.diagnosis %}<p class="mb-2">{{ scan.diagnosis|linebreaksbr }}</p>{% endif %}
-  {% if scan.advice %}<p class="font-medium mt-3">Sfaturi</p><p>{{ scan.advice|linebreaksbr }}</p>{% endif %}
-  {% if scan.confidence %}<p class="text-sm text-stone-500 mt-3">Încrederea modelului: {{ scan.confidence }}</p>{% endif %}
-  <p class="text-xs text-stone-500 mt-3">Rezultatele sunt generate de AI și pot fi greșite. Pentru cazuri nesigure, cere ajutor pe forum.</p>
-</div>
+  {% if scan.health %}<div class="health-chip">{% icon "heart" 15 %} <b>Stare:</b> {{ scan.health }}</div>{% endif %}
+  {% if scan.diagnosis %}<p class="scan-result__text">{{ scan.diagnosis|linebreaksbr }}</p>{% endif %}
+  {% if scan.advice %}
+    <div class="advice">
+      <p class="advice__title">{% icon "leaf" 16 %} Sfaturi</p>
+      <p>{{ scan.advice|linebreaksbr }}</p>
+    </div>
+  {% endif %}
+  {% if scan.confidence %}<p class="label-muted mt-4">Încrederea modelului: {{ scan.confidence }}</p>{% endif %}
+  <p class="fine-print">Rezultatele sunt generate de AI și pot fi greșite. Pentru cazuri nesigure, cere ajutor pe forum.</p>
+</section>

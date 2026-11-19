@@ -1,20 +1,30 @@
 {% extends "base.html" %}
+{% load flauna %}
 {% block content %}
-<header class="page-heading page-heading--compact">
-  <div><p class="eyebrow">Flauna · Îngrijire cu drag</p><h1 class="page-title">{{ title }}</h1></div>
-</header>
-<form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} class="surface form-panel"
-      {% if wait %}onsubmit="document.getElementById('wait').classList.remove('hidden'); this.querySelector('button').disabled = true;"{% endif %}>
-  {% csrf_token %}
-  {% if multipart %}<p class="upload-hint">Pozele de pe telefon sunt redimensionate automat pentru încărcare și analiză. Pentru rezultate clare, încearcă o fotografie luminoasă și focalizată.</p>{% endif %}
-  {% for f in form %}
-    <div class="mb-4">
-      <label class="block text-sm font-medium mb-1" for="{{ f.id_for_label }}">{{ f.label }}</label>
-      {{ f }}
-      {% if f.errors %}<p class="text-red-600 text-sm mt-1">{{ f.errors|join:", " }}</p>{% endif %}
+<div class="narrow">
+  <a href="javascript:history.back()" class="back-link">{% icon "arrow-left" 16 %} Înapoi</a>
+  <header class="page-heading page-heading--compact">
+    <div><p class="eyebrow">Flauna · Îngrijire cu drag</p><h1 class="page-title">{{ title }}</h1></div>
+  </header>
+  <form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} class="surface form-panel"
+        {% if wait %}onsubmit="document.getElementById('wait').classList.remove('hidden'); this.querySelector('button[type=submit],button:not([type])').disabled = true;"{% endif %}>
+    {% csrf_token %}
+    {% if multipart %}
+      <div class="upload-hint">{% icon "camera" 18 %}<span>Pozele de pe telefon sunt redimensionate automat. Pentru rezultate clare, alege o fotografie luminoasă și focalizată.</span></div>
+    {% endif %}
+    {% for f in form %}
+      <div class="field">
+        <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<p class="field-help">{{ f.help_text }}</p>{% endif %}
+        {% if f.errors %}<p class="field-error">{{ f.errors|join:", " }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button class="button button-primary button-lg w-full sm:w-auto disabled:opacity-50">{{ submit }}</button>
+    <div id="wait" class="hidden wait-box">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Se lucrează… Analiza AI poate dura de la câteva secunde până la câteva minute (prima dată, mai mult). Nu închide pagina.</span>
     </div>
-  {% endfor %}
-  <button class="button button-primary disabled:opacity-50">{{ submit }}</button>
-  <p id="wait" class="hidden mt-3 text-stone-600">Se lucrează… Analiza AI poate dura de la câteva secunde până la câteva minute (prima dată, mai mult). Nu închide pagina.</p>
-</form>
+  </form>
+</div>
 {% endblock %}

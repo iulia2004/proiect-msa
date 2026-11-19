@@ -1,4 +1,5 @@
+{% load flauna %}
 <button hx-post="{% url 'post_vote' post.pk %}" hx-swap="outerHTML"
-        class="button {% if voted %}button-primary{% else %}button-secondary{% endif %}">
-  {% if voted %}Util ✓{% else %}Util{% endif %} · {{ count }}
+        class="vote {% if voted %}is-voted{% endif %}" title="Marchează ca util">
+  {% icon "heart" 16 %}<span>Util</span><b>{{ count }}</b>
 </button>

@@ -1,0 +1,8 @@
+{% load allauth %}
+<section class="auth-panel">
+    <h2 class="section-title section-title--inside mb-3">{% slot title %}{% endslot %}</h2>
+    {% slot body %}{% endslot %}
+    {% if slots.actions %}
+        <div class="auth-button-group">{% for action in slots.actions %}{{ action }}{% endfor %}</div>
+    {% endif %}
+</section>

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load flauna %}
 {% block content %}
 <header class="page-heading">
   <div>
@@ -6,29 +7,34 @@
     <h1 class="page-title">Animalele mele</h1>
     <p class="page-description">Toate informațiile și îngrijirea companionilor tăi, într-un singur loc.</p>
   </div>
-  <div class="flex flex-wrap gap-2">
-    <a href="{% url 'pet_identify' %}" class="button button-secondary">Identifică</a>
-    <a href="{% url 'pet_new' %}" class="button button-primary">Adaugă un animal</a>
+  <div class="page-heading__actions">
+    <a href="{% url 'pet_identify' %}" class="button button-secondary">{% icon "camera" 16 %} Identifică</a>
+    <a href="{% url 'pet_new' %}" class="button button-primary">{% icon "plus" 16 %} Adaugă un animal</a>
   </div>
 </header>
-<ul class="grid gap-3 sm:grid-cols-2">
-  {% for p in pets %}
-    <li><a href="{{ p.get_absolute_url }}" class="pet-card surface block">
-      <span class="pet-card__icon" aria-hidden="true">🐾</span>
-      <span class="min-w-0">
-        <strong class="block text-lg">{{ p.name }}</strong>
-        <span class="mt-1 block text-sm text-muted">{{ p.get_species_display }}{% if p.breed %} · {{ p.breed }}{% endif %}</span>
-        <span class="mt-3 inline-flex rounded-full bg-soft px-3 py-1 text-xs font-medium">{{ p.get_location_display }}</span>
-      </span>
-      <span class="pet-card__arrow" aria-hidden="true">→</span>
-    </a></li>
-  {% empty %}
-    <li class="surface empty-state sm:col-span-2">
-      <span class="empty-state__icon" aria-hidden="true">🐾</span>
-      <h2 class="text-lg font-semibold">Încă nu ai adăugat niciun animal</h2>
-      <p class="text-muted">Creează un profil pentru a ține la îndemână detaliile și reminderele de îngrijire.</p>
-      <a href="{% url 'pet_new' %}" class="button button-primary mt-2">Adaugă primul animal</a>
-    </li>
-  {% endfor %}
-</ul>
+{% if pets %}
+  <ul class="pet-grid">
+    {% for p in pets %}
+      <li><a href="{{ p.get_absolute_url }}" class="pet-card">
+        <span class="pet-card__avatar pet-card__avatar--{{ p.species }}" aria-hidden="true">{{ p.species|species_emoji }}</span>
+        <span class="pet-card__body">
+          <strong>{{ p.name }}</strong>
+          <span>{{ p.get_species_display }}{% if p.breed %} · {{ p.breed }}{% endif %}</span>
+          <span class="chip">{% icon "pin" 13 %} {{ p.get_location_display }}</span>
+        </span>
+        <span class="pet-card__arrow">{% icon "arrow-right" 18 %}</span>
+      </a></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="surface empty-state">
+    <span class="empty-state__icon" aria-hidden="true">🐾</span>
+    <h2>Încă nu ai adăugat niciun animal</h2>
+    <p>Creează un profil pentru a ține la îndemână detaliile și reminderele de îngrijire.</p>
+    <div class="empty-state__actions">
+      <a href="{% url 'pet_identify' %}" class="button button-secondary">{% icon "camera" 16 %} Identifică din poză</a>
+      <a href="{% url 'pet_new' %}" class="button button-primary">Adaugă primul animal</a>
+    </div>
+  </div>
+{% endif %}
 {% endblock %}
