@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -68,7 +68,27 @@ TEMPLATES = [
     },
 ]
 
-if env("DB_HOST"):
+database_url = env("DATABASE_URL")
+if database_url:
+    parsed_database_url = urlparse(database_url)
+    if parsed_database_url.scheme not in {"postgres", "postgresql"}:
+        raise ValueError("DATABASE_URL must use the postgres:// or postgresql:// scheme")
+    if not all((parsed_database_url.hostname, parsed_database_url.path.strip("/"),
+                parsed_database_url.username, parsed_database_url.password)):
+        raise ValueError("DATABASE_URL must include the database, username, password, and host")
+    database_query = parse_qs(parsed_database_url.query)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": unquote(parsed_database_url.path.lstrip("/")),
+            "USER": unquote(parsed_database_url.username),
+            "PASSWORD": unquote(parsed_database_url.password),
+            "HOST": parsed_database_url.hostname,
+            "PORT": str(parsed_database_url.port or 5432),
+            "OPTIONS": {"sslmode": database_query.get("sslmode", ["require"])[-1]},
+        }
+    }
+elif env("DB_HOST"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -107,8 +127,8 @@ SITE_ID = 1
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
-ACCOUNT_LOGIN_METHODS = {"email"}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
+ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = SITE_SCHEME

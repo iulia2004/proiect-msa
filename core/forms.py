@@ -110,8 +110,9 @@ class CommentForm(Styled, forms.ModelForm):
 # --- allauth forms with proper Romanian labels ---
 
 AUTH_LABELS = {
-    "login": ("Email", "adresa@exemplu.ro"),
+    "login": ("Email sau nume de utilizator", "adresa@exemplu.ro sau utilizator"),
     "email": ("Email", "adresa@exemplu.ro"),
+    "username": ("Nume de utilizator", "Alege un nume de utilizator"),
     "password": ("Parolă", "Parola ta"),
     "password1": ("Parolă", "Alege o parolă"),
     "password2": ("Confirmă parola", "Scrie parola din nou"),

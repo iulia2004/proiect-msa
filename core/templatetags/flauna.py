@@ -64,6 +64,9 @@ def species_emoji(species):
 
 @register.filter
 def display_name(user):
+    username = (getattr(user, "username", "") or "").strip()
+    if username:
+        return username
     name = (getattr(user, "first_name", "") or "").strip()
     if not name:
         name = (getattr(user, "email", "") or getattr(user, "username", "")).split("@")[0]
